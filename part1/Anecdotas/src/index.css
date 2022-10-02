@@ -1,0 +1,29 @@
+body{
+    background-color: violet;
+}
+
+.anecdotes {
+    text-align: center;
+    font-size: 18px;
+}
+
+button {
+    margin: 0 30px;
+    width: 150px;
+    height: 30px;
+    border: none;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -o-transform: scale(1.2);
+}
