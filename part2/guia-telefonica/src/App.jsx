@@ -27,8 +27,6 @@ const App = () => {
         setPersonFilter(e.target.value);
     };
 
-    const onFilterChange = () => {};
-
     const addPerson = (e) => {
         e.preventDefault();
         const persona = {
