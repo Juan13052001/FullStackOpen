@@ -1,19 +1,50 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Weather = ({ capital }) => {
-    const [weatherData, setWeatherData] = useState({});
-    const Weather = () => {
-        axios
+    const [weatherData, setWeatherData] = useState([]);
+    const Weather = async () => {
+        const data = await axios
             .get(
-                `${process.env.REACT_APP_URL}${capital}${process.env.REACT_APP_WEATHER_API}`
+                `${import.meta.env.VITE_URL}${capital[0]}${
+                    import.meta.env.VITE_WEATHER_API
+                }`
             )
             .then((resp) => {
                 console.log(resp.data);
                 setWeatherData(resp.data);
             });
+        const {
+            weather: { description, icon, id },
+            sys,
+            name,
+            main: { temp, humidity },
+        } = data;
+        return {
+            sys,
+            name,
+            main,
+            description,
+            icon,
+            id,
+            temp,
+            humidity,
+        };
     };
-    return <div onLoad={()=>Weather()}>Weather</div>;
+
+    useEffect(() => {
+        const data = async () => {
+            const dataWeather = await Weather();
+            return dataWeather;
+        };
+        data();
+    }, [capital]);
+    return (
+        <div>
+            Weather in {capital}
+            <p>{weatherData.temp}</p>
+        </div>
+    );
 };
 
 export default Weather;
