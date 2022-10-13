@@ -12,24 +12,22 @@ const Weather = ({ capital }) => {
             )
             .then((resp) => {
                 console.log(resp.data);
-                setWeatherData(resp.data);
+                const {
+                    weather: [{ description, icon, id }],
+                    sys: { country },
+                    name,
+                    main: { temp, humidity },
+                } = resp.data;
+                setWeatherData({
+                    description,
+                    icon,
+                    id,
+                    country,
+                    name,
+                    temp,
+                    humidity,
+                });
             });
-        const {
-            weather: { description, icon, id },
-            sys,
-            name,
-            main: { temp, humidity },
-        } = data;
-        return {
-            sys,
-            name,
-            main,
-            description,
-            icon,
-            id,
-            temp,
-            humidity,
-        };
     };
 
     useEffect(() => {
@@ -41,8 +39,16 @@ const Weather = ({ capital }) => {
     }, [capital]);
     return (
         <div>
-            Weather in {capital}
-            <p>{weatherData.temp}</p>
+            <h2>
+                Weather in {capital}, {weatherData.country}
+            </h2>
+            <p>{weatherData.description}</p>
+            <img
+                src={`http://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
+                alt={weatherData.name}
+            />
+            <p>{weatherData.temp} °C</p>
+            <p>{weatherData.humidity}</p>
         </div>
     );
 };

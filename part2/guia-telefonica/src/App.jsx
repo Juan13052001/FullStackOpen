@@ -1,5 +1,5 @@
-import axios, { Axios } from "axios";
 import { useEffect, useState } from "react";
+import agenda from "./services/agenda";
 import { AddPerson } from "./components/AddPerson";
 import { FilterPerson } from "./components/FilterPerson";
 import { NumbersPersons } from "./components/NumbersPersons";
@@ -10,9 +10,7 @@ const App = () => {
     const [personFilter, setPersonFilter] = useState("");
 
     useEffect(() => {
-        axios
-            .get("http://localhost:3001/persons")
-            .then((response) => setPersons(response.data));
+        agenda.getAll().then((initialContacts) => setPersons(initialContacts));
     }, []);
 
     const onInputNameChange = (e) => {
@@ -36,19 +34,66 @@ const App = () => {
         if (
             persons.filter((person) => person.name === persona.name).length > 0
         ) {
-            return alert(`${persona.name} ya existe`);
+            if (
+                window.confirm(
+                    `${persona.name} ya está registrado,deseas actualizarlo?`
+                )
+            ) {
+                const personaPrevia = persons.find(
+                    (n) => n.name === persona.name
+                );
+                agenda
+                    .update(personaPrevia.id, {
+                        ...personaPrevia,
+                        number: newPhone,
+                    })
+                    .then((updatePersona) => {
+                        setPersons(
+                            persons.map((n) =>
+                                n.name === newName ? updatePersona : n
+                            )
+                        );
+                    })
+                    .catch((err) => console.log(err));
+            }
+            setPersons(persons.concat(persona));
+            setNewName("");
+            setNewPhone("");
+        } else {
+            agenda.create(persona).then((returnedContact) => {
+                setPersons(persons.concat(returnedContact));
+                setNewName("");
+                setNewPhone("");
+            });
         }
-        setPersons([
-            ...persons,
-            {
-                name: newName,
-                number: newPhone,
-            },
-        ]);
-
-        setNewName("");
-        setNewPhone("");
     };
+
+    const deletePerson = (name, id) => {
+        if (window.confirm(`Delete a ${name}?`)) {
+            agenda
+                .deleteContact(id)
+                .then(() => {
+                    console.log("Delete");
+                    setPersons(persons.filter((n) => n.id !== id));
+                    setNewName("");
+                    setNewPhone("");
+                })
+                .catch((error) => {
+                    setPersons(persons.filter((n) => n.name !== name));
+                    console.log(error);
+                });
+        }
+    };
+
+    // const updatePerson = (name, id, number) => {
+    //     if (window.confirm(`Update a ${name}?`)) {
+    //         const persona = {
+    //             name: name,
+    //             number: number,
+    //         };
+    //         agenda.update(id, persona).then()
+    //     }
+    // };
     return (
         <div>
             <h2>Phonebook</h2>
@@ -65,7 +110,11 @@ const App = () => {
                 onInputPhoneChange={onInputPhoneChange}
             />
             <h2>Numbers</h2>
-            <NumbersPersons persons={persons} personFilter={personFilter} />
+            <NumbersPersons
+                deleteContact={deletePerson}
+                persons={persons}
+                personFilter={personFilter}
+            />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import { Persona } from "./Persona";
 
-export const NumbersPersons = ({ persons, personFilter }) => {
+export const NumbersPersons = ({ persons, personFilter, deleteContact }) => {
     return (
         <ul>
             {persons
@@ -10,7 +10,11 @@ export const NumbersPersons = ({ persons, personFilter }) => {
                         .includes(personFilter.toLowerCase())
                 )
                 .map((person) => (
-                    <Persona person={person} key={person.name} />
+                    <Persona
+                        person={person}
+                        key={person.name}
+                        deleteContact={deleteContact}
+                    />
                 ))}
         </ul>
     );

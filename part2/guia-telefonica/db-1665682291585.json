@@ -16,14 +16,19 @@
       "id": 3
     },
     {
-      "name": "Juan",
-      "number": "9211427924",
+      "name": "Mary Poppendieck",
+      "number": "39-23-6423122",
       "id": 4
     },
     {
-      "name": "Kathia",
+      "name": "Juan",
       "number": "9211427924",
       "id": 5
+    },
+    {
+      "name": "Kathia",
+      "number": "5578399823",
+      "id": 6
     }
   ]
 }
