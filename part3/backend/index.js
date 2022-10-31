@@ -3,8 +3,16 @@ const morgan = require("morgan");
 
 const app = express();
 
+morgan.token("datos", (req, res) => {
+    return JSON.stringify(req.body);
+});
+
 app.use(express.json());
-app.use(morgan("combined"));
+app.use(
+    morgan(
+        ":method :url :status :res[content-length] - :response-time ms :datos"
+    )
+);
 
 let persons = [
     {
