@@ -8,6 +8,7 @@ const App = () => {
     const [newName, setNewName] = useState("");
     const [newPhone, setNewPhone] = useState("");
     const [personFilter, setPersonFilter] = useState("");
+    const [mensaje, setMensaje] = useState(null);
 
     useEffect(() => {
         agenda.getAll().then((initialContacts) => setPersons(initialContacts));
@@ -53,17 +54,20 @@ const App = () => {
                                 n.name === newName ? updatePersona : n
                             )
                         );
+                        setMensaje("El contacto ha sido actualizado");
                     })
                     .catch((err) => console.log(err));
             }
             setPersons(persons.concat(persona));
             setNewName("");
             setNewPhone("");
+            setMensaje("Agregado nueva persona");
         } else {
             agenda.create(persona).then((returnedContact) => {
                 setPersons(persons.concat(returnedContact));
                 setNewName("");
                 setNewPhone("");
+                setMensaje("El contacto se ha creado");
             });
         }
     };
@@ -77,6 +81,7 @@ const App = () => {
                     setPersons(persons.filter((n) => n.id !== id));
                     setNewName("");
                     setNewPhone("");
+                    setMensaje("El contacto se ha eliminado");
                 })
                 .catch((error) => {
                     setPersons(persons.filter((n) => n.name !== name));
@@ -85,15 +90,6 @@ const App = () => {
         }
     };
 
-    // const updatePerson = (name, id, number) => {
-    //     if (window.confirm(`Update a ${name}?`)) {
-    //         const persona = {
-    //             name: name,
-    //             number: number,
-    //         };
-    //         agenda.update(id, persona).then()
-    //     }
-    // };
     return (
         <div>
             <h2>Phonebook</h2>
