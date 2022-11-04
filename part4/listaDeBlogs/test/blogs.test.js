@@ -130,13 +130,12 @@ describe("deletion one blog", () => {
         const blogDelete = blogsAtStart[3];
         await api.delete(`/api/blogs/${blogDelete.id}`).expect(204);
 
-        const blogsAtEnd = await helper.blogsInDb()
-        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+        const blogsAtEnd = await helper.blogsInDb();
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 
-        const title = blogsAtEnd.map(blog => blog.title)
+        const title = blogsAtEnd.map((blog) => blog.title);
 
-        expect(title).not.toContain(blogDelete.title)
-
+        expect(title).not.toContain(blogDelete.title);
     });
 });
 
