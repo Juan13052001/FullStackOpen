@@ -1,6 +1,15 @@
-const Blog = require("../models/blogs");
-
+const jwt = require("jsonwebtoken");
+const Blog = require("../models/blog");
 const User = require("../models/user");
+
+const initialUser = {
+    _id: "625c5b0a5ba9bbc6be2aa796",
+    username: "oabrivard",
+    name: "Olivier Abrivard",
+    passwordHash: "2b$10$G/o4d2b9lA.yJmM95z5BL.Qeh73sX/ZJG2a3GxgB8YIa2fFTWCR/W",
+    __v: 0,
+};
+
 const initialBlogs = [
     {
         _id: "5a422a851b54a676234d17f7",
@@ -57,33 +66,39 @@ const initialBlogs = [
         __v: 0,
     },
 ];
-
 const blogsInDb = async () => {
     const blogs = await Blog.find({});
-    return blogs.map((blog) => blog.toJSON());
+    return blogs.map((b) => b.toJSON());
 };
-
 const nonExistingId = async () => {
     const blog = new Blog({ url: "willremovethissoon" });
     await blog.save();
     await blog.remove();
-
     return blog.id;
 };
-
 const blogInDb = async (id) => {
     return await Blog.findById(id);
 };
-
 const usersInDb = async () => {
     const users = await User.find({});
     return users.map((u) => u.toJSON());
 };
 
+const validTokenForUser = (user) => {
+    const userForToken = {
+        username: user.username,
+        id: user._id,
+    };
+
+    return jwt.sign(userForToken, process.env.SECRET, { expiresIn: 60 * 60 });
+};
+
 module.exports = {
+    initialUser,
     initialBlogs,
     blogsInDb,
     nonExistingId,
     blogInDb,
     usersInDb,
+    validTokenForUser,
 };
