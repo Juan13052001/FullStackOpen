@@ -56,7 +56,11 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Persona.findByIdAndRemove(req.params.id)
+<<<<<<< HEAD
     .then(() => res.status(204).end())
+=======
+    .then((result) => res.status(204).end())
+>>>>>>> 0a814d2 (Ejercicio 4.1-4.2 completado)
     .catch((err) => next(err))
 })
 
