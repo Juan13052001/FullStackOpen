@@ -17,7 +17,7 @@ const App = () => {
 
     useEffect(() => {
         blogService.getAll().then((blogs) => setBlogs(blogs));
-    }, [blogs]);
+    }, []);
 
     useEffect(() => {
         const loggedUserJSON = localStorage.getItem("loggedBlogAppUser");
@@ -61,6 +61,35 @@ const App = () => {
         }
     };
 
+    const updateBlog = async (blog) => {
+        try {
+            const data = {
+                user: blog.user.id,
+                likes: blog.likes,
+                author: blog.author,
+                title: blog.title,
+                url: blog.url,
+            };
+            const updatedBlog = await blogService.update(blog.id, data);
+            setBlogs(blogs.filter((b) => b.id !== blog.id).concat(updatedBlog));
+            return true;
+        } catch (err) {
+            console.log(err.message);
+            return false;
+        }
+    };
+
+    const deleteBlog = async (blog) => {
+        if (window.confirm(`Delete blog ${blog.title} ?`)) {
+            try {
+                await blogService.remove(blog);
+                setBlogs(blogs.filter((b) => b.id !== blog.id));
+            } catch (exception) {
+                console.log(exception);
+            }
+        }
+    };
+
     const cerrarSesion = () => {
         localStorage.removeItem("loggedBlogAppUser");
         setUser(null);
@@ -82,17 +111,28 @@ const App = () => {
             ) : (
                 <div>
                     <p>{user.name} logged</p>
-                    <button type="button" onClick={cerrarSesion}>
+                    <button type="button" id="salir" onClick={cerrarSesion}>
                         Salir
                     </button>
-                    <Togglable buttonLabel="Create a new note" ref={toggableBlogFormRef}>
+                    <Togglable
+                        buttonLabel="Create a new Blog"
+                        ref={toggableBlogFormRef}
+                    >
                         <BlogForm addBlog={addBlog} />
                     </Togglable>
                     <div>
                         <h1>Lista de Blogs</h1>
-                        {blogs.map((blog) => (
-                            <Blog key={blog.id} blog={blog} />
-                        ))}
+                        {blogs
+                            .sort((b1, b2) => b2.likes - b1.likes)
+                            .map((blog) => (
+                                <Blog
+                                    key={blog.id}
+                                    blog={blog}
+                                    updateBlog={updateBlog}
+                                    deleteBlog={deleteBlog}
+                                    userId={user.id}
+                                />
+                            ))}
                     </div>
                 </div>
             )}

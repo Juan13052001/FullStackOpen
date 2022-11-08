@@ -32,22 +32,18 @@ blogsRouter.get("/:id", async (request, response) => {
     }
 });
 
-blogsRouter.delete(
-    "/:id",
-    middleware.userExtractor,
-    async (request, response) => {
-        const blogToDelete = await Blog.findById(request.params.id);
+blogsRouter.delete("/:id", async (request, response) => {
+    const blogToDelete = await Blog.findById(request.params.id);
 
-        if (blogToDelete.user.toJSON() !== request.user.id) {
-            return response
-                .status(401)
-                .json({ error: "only the creator can delete a blog" });
-        }
+    // if (blogToDelete.user.toJSON() !== request.user.id) {
+    //     return response
+    //         .status(401)
+    //         .json({ error: "only the creator can delete a blog" });
+    // }
 
-        await Blog.findByIdAndRemove(blogToDelete.id);
-        response.status(204).end();
-    }
-);
+    await Blog.findByIdAndRemove(blogToDelete.id);
+    response.status(204).end();
+});
 
 blogsRouter.put("/:id", async (request, response) => {
     const updatedBlog = await Blog.findByIdAndUpdate(
