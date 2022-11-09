@@ -1,5 +1,5 @@
 const initialState = "";
-
+let timeoutID = -1;
 export const addNotification = (mensaje) => {
     return {
         type: "add_notification",
@@ -10,6 +10,19 @@ export const addNotification = (mensaje) => {
 export const removeNotification = () => {
     return {
         type: "remove_notification",
+    };
+};
+
+export const setNotification = (message, duration) => {
+    return (dispatch) => {
+        if (timeoutID >= 0) {
+            clearTimeout(timeoutID);
+            timeoutID = -1;
+        }
+        dispatch(addNotification(message));
+        timeoutID = setTimeout(() => {
+            dispatch(removeNotification());
+        }, duration * 1000);
     };
 };
 

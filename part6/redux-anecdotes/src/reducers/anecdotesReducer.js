@@ -1,62 +1,57 @@
-const anecdotesAtStart = [
-    "If it hurts, do it more often",
-    "Adding manpower to a late software project makes it later!",
-    "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
-    "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-    "Premature optimization is the root of all evil.",
-    "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
-];
-
-const getId = () => (100000 * Math.random()).toFixed(0);
+import anecdoteServices from "../services/anecdotes";
 
 const asObject = (anecdote) => {
     return {
         content: anecdote,
-        id: getId(),
         votes: 0,
     };
 };
 
-const initialState = anecdotesAtStart.map(asObject);
-
 export const addAnecdote = (content) => {
-    return {
-        type: "ADD_ANECDOTE",
-        data: {
-            content,
-        },
+    return async (dispatch) => {
+        dispatch({
+            type: "ADD_ANECDOTE",
+            data: content,
+        });
+    };
+};
+
+export const initializeAnecdotes = () => {
+    return async (dispatch) => {
+        const anecdotes = await anecdoteServices.getAll();
+        dispatch({
+            type: "INIT_ANECDOTES",
+            data: anecdotes,
+        });
     };
 };
 
 export const vote = (id) => {
-    return {
-        type: "VOTE",
-        data: { id },
+    return async (dispatch, getState) => {
+        const state = getState().anecdotes;
+        console.log(state);
+        const anecdoteToChange = state.find((a) => a.id === id);
+        const changedAnecdote = {
+            ...anecdoteToChange,
+            votes: anecdoteToChange.votes + 1,
+        };
+        const updatedAnecdote = await anecdoteServices.updateAnecdote(
+            id,
+            changedAnecdote
+        );
+        const anecdotes = state.map((a) => (a.id !== id ? a : updatedAnecdote));
+        dispatch(initializeAnecdotes(anecdotes));
     };
 };
 
-const reducer = (state = initialState, action) => {
-    console.log("state now: ", state);
-    console.log("action", action);
-
+const reducer = (state = [], action) => {
     switch (action.type) {
         case "ADD_ANECDOTE": {
-            const newState = [
-                ...state,
-                { content: action.data.content, id: getId(), votes: 0 },
-            ];
-            console.log("new state: ", newState);
-            return newState;
+            return [...state, action.data];
         }
+        case "INIT_ANECDOTES":
+            return action.data;
         case "VOTE": {
-            const id = action.data.id;
-            const anecdoteChange = state.find((anecdote) => anecdote.id === id);
-
-            const newAnecdotes = {
-                ...anecdoteChange,
-                votes: anecdoteChange.votes + 1,
-            };
-
             return state.map((a) => (a.id !== id ? a : newAnecdotes));
         }
         default:
